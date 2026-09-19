@@ -4,6 +4,8 @@
   "private": true,
   "description": "Medi Dost health information companion",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "check": "node --check server.js && node --check database.js && node --check script.js",
+    "test": "node --test tests/*.test.js"
   }
 }

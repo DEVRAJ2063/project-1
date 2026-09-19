@@ -20,7 +20,9 @@ npm start
 
 Open <http://localhost:4173/> in a browser.
 
-## Included in this preview
+The app uses Node's built-in SQLite implementation and creates `data/medidost.sqlite` on first start. Copy `.env.example` to `.env` or set environment variables in the shell before starting. The seeded demo account is `devraj@example.com` with password `medidost123`; change this before any real deployment.
+
+## Included
 
 - Responsive desktop, tablet, and mobile dashboard
 - Mobile bottom navigation
@@ -33,10 +35,39 @@ Open <http://localhost:4173/> in a browser.
 - Profile and privacy surface
 - Dark mode toggle
 - English, Hindi, and Hinglish language menu entry state
+- Backend health endpoint at `/api/health`
+- Repeatable JavaScript validation with `npm run check`
+
+## Current architecture
+
+- `index.html`, `styles.css`, and `script.js`: existing vanilla Medi Dost interface.
+- `server.js`: HTTP API, authentication middleware, static file delivery, validation, rate limiting, and route handlers.
+- `database.js`: SQLite schema, migrations-on-start, password hashing, and seed medicine reference data.
+- `tests/api.test.js`: HTTP smoke tests using an isolated SQLite database.
+
+## API surface
+
+- `GET /api/health`
+- `POST /api/signup`, `POST /api/login`, `POST /api/logout`, `GET /api/session`
+- `GET /api/search?q=...`, `GET /api/medicines`, `GET /api/medicines/:id`
+- `POST /api/ai/chat` (legacy alias: `POST /api/chat`)
+- `POST /api/interactions/check` (legacy alias: `POST /api/interactions`)
+- `GET/POST /api/reminders`, `PUT/DELETE /api/reminders/:id`
+- `GET/POST /api/saved-medicines`, `DELETE /api/saved-medicines/:id`
+- `POST /api/medicine-video`
+
+Successful responses use `{ success: true, data: ... }`; failures use `{ success: false, error, details }`.
+
+## Validation and tests
+
+```powershell
+npm run check
+npm test
+```
 
 ## Production configuration points
 
-The local backend intentionally uses a small in-memory demo user and deterministic medicine responses. It is not a production medical AI service. A production implementation should add:
+The local backend now uses SQLite, hashed passwords, durable sessions, and deterministic responses from a small local reference set. It is still not a production medical AI or authoritative drug-data service. A production implementation should add:
 
 - React or Next.js application routes and reusable components
 - Server-side AI API integration with structured prompts and retrieval from verified medicine sources
